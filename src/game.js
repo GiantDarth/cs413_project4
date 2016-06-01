@@ -28,6 +28,21 @@
             RENDER_HEIGHT = TILE_SIZE * (LEVEL_HEIGHT + SAVE_ZONE_HEIGHT + SCORE_HEIGHT) * ZOOM;
 
             this.title = "Centipede?";
+            this.credits = [
+                'Creator: Christopher Philabaum',
+                'Sound Design: Christopher Philabaum',
+                'Music: Christopher Philabaum',
+                'Art: Christopher Philabaum',
+            ];
+            this.tools = [
+                'Pixijs',
+                'Pixi-Audio',
+                'TweenJS',
+                'Bfxr',
+                'Bosca Ceoil',
+                'fre:ac',
+                'Atom'
+            ]
 
             // Append renderer to gameport
             this.gameport = document.getElementById("gameport");
@@ -36,19 +51,19 @@
 
             // Add screens
             this.screenMap = new Map();
-            this.currentScreen = 'title';
-            this.screenMap.set('title', new PIXI.Container());
-            this.screenMap.set('tutorial', new PIXI.Container());
-            this.screenMap.set('main', new PIXI.Container());
-            this.screenMap.set('menu', new PIXI.Container());
+            this.currentScreen = 'demo';
+            this.screenMap.set('screen', new PIXI.Container());
+            this.screenMap.set('overlay', new PIXI.Container());
+            this.screenMap.set('demo', new PIXI.Container());
+            this.screenMap.set('level', new PIXI.Container());
             this.screenMap.set('credits', new PIXI.Container());
 
-            this.screenMap.get('main').scale.x = ZOOM;
-            this.screenMap.get('main').scale.y = ZOOM;
+            this.screenMap.get('screen').scale.x = ZOOM;
+            this.screenMap.get('screen').scale.y = ZOOM;
 
-            this.paused = true;
+            this.paused = false;
 
-            PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
+            // PIXI.SCALE_MODES.DEFAULT = PIXI.SCALE_MODES.NEAREST;
             PIXI.loader
                 .add('assets/img/assets.json')
                 .load(() => {
@@ -57,8 +72,8 @@
         }
 
         load(render) {
-            this.initScreens();
-            this.initWorld();
+            // this.initScreens();
+            this.initLevel(true);
             this.initKeyHandlers();
 
             // Initialize render loop
@@ -77,7 +92,7 @@
 
         initScreens() {
             // Title Screen
-            this.options = ['New Game', 'Credits'];
+            this.options = ['Play', 'Credits'];
             this.currentOption = 0;
             this.optTexts = new Array();
             let container = new PIXI.Container();
@@ -163,13 +178,15 @@
             this.screenMap.get('main').addChild(this.screenMap.get('menu'));
         }
 
-        initWorld() {
-            this.world = new PIXI.Container();
+        initWorld(isDemo) {
+            this.level = new PIXI.Container();
             this.enemies = new Array();
+            this.player;
 
             this.entityContainer = new PIXI.Container();
+            this.level.addChild(this.entityContainer);
 
-            this.world.addChild(this.entityContainer);
+
         }
 
         initKeyHandlers() {
@@ -183,57 +200,19 @@
         }
 
         update() {
-            if(!this.paused) {
-                this.moveCamera();
-                this.player.update(this.enemies);
-                for(let enemy of this.enemies) {
-                    if(!enemy.isAlive) {
-                        this.entityContainer.removeChild(enemy.sprite);
-                        enemy.die();
-                    }
-                }
-                let count = this.enemies.length;
-                // Only return enemies that are still alive.
-                this.enemies = this.enemies.filter(enemy => enemy.isAlive);
-                // Add the difference between the old list and the new list.
-                this.player.kills += count - this.enemies.length;
-                for(let enemy of this.enemies) {
-                    enemy.update(this.player);
-                }
+            if(this.demo) {
 
-                let zone = this.getZone();
-                if(this.player.x > 0 && !this.zones[zone].entered) {
-                    this.zones[zone].entered = true;
-                    this.addZone();
-                }
             }
+            else if(!this.paused) {
 
-            if(this.currentScreen === 'main') {
-                this.backMusic.paused = this.paused;
             }
-
-            // Result all tints.
-            for(let opt of this.optTexts) {
-                opt.tint = 0xFFFFFF;
-            }
-            this.optTexts[this.currentOption].tint = 0xCCAA00;
-
-            // Follow the player
-            // Choose the cneter based on if the player is at the leftmost edge or not.
-            this.screenMap.get('menu').position.x = Math.max(RENDER_WIDTH / ZOOM / 2 - TILE_SIZE / 2, this.player.x);
-            // Adjust for the amount of digits.
-            this.scoreText.position.x = (TILE_SIZE * TILE_VIEW / 2) - (`${this.player.kills}`.length * 6);
-
-            this.scoreText.text = this.player.kills;
-            this.loseText.text = `You lost!\nYou had ${this.player.kills} points.\nPress R to try again.`;
-            this.loseText.visible = !this.player.isAlive;
-
-            this.pauseText.visible = this.paused;
 
             // Final step
             this.renderer.render(this.screenMap.get(this.currentScreen));
         }
     }
+
+    const
 
     // Returns a random number between min (inclusive) and max (exclusive)
     function getRandomArbitrary(min, max) {
