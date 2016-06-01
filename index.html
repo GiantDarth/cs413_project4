@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Beat-'em-All! cp723: Project 3 (Tiles)</title>
+        <!-- Bootstrap v3.3.6 -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+            integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+        <style>
+            main {
+                margin-top: 20px;
+            }
+            main p {
+                padding: 16px;
+                font-size: 16px;
+            }
+            #instructions span {
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <main class="well">
+                <h1 class="text-center">Beat-'em-All!</h1>
+                <p style="padding: 6px 16px;">
+                    <span>Christopher Philabaum</span>
+                    <a class="text-info pull-right" href="https://github.com/chaos7theory/cs413_project3">Source (GitHub)</a>
+                </p>
+                <p class="bg-warning text-warning">
+                    This game utilizes <mark>ES2015</mark> features, and requires at least
+                    Firefox 21, Chrome 45, or Microsoft Edge. Not tested on Safari and not supported on IE.
+                </p>
+                <div class="text-center" id="gameport"></div>
+
+
+                <h2 class="h1">Instructions</h2>
+                <p id="instructions" class="bg-info text-info">
+                    <span>Move <strong>left</strong> and <strong>right</strong> with the <strong>A</strong> and <strong>D</strong> keys respectively.</span>
+                    <span>Use <strong>spacebar</strong> to throw punches!</span>
+                    <span>Press <strong>R</strong> to reset.</span>
+                    <span>Press <strong>Enter</strong> to pause the game.</span>
+                    <span>Use <strong>Esc</strong> to go back to the main menu.</span>
+                    <span>Press <strong>M</strong> to toggle / (un)mute the title screen music and background music.</span>
+
+                    <span style="margin-top: 20px;">Watch out, as the further you progress, the more enemies you have fend off. How many can you take down before you go down?</span>
+                </p>
+            </main>
+
+
+            <div style="margin-top: 80px;">
+                <h2 class="h1">Comments</h2>
+                <div id="disqus_thread"></div>
+            </div>
+        </main>
+
+        <script>
+            (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://nau-cs413.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <script src="lib/pixi/pixi.min.js"></script>
+        <script src="lib/pixi-audio/pixi-audio.js"></script>
+        <script src="lib/tweenjs/tweenjs.min.js"></script>
+        <script src="lib/tu/tileUtilities.js"></script>
+        <script src="src/game.js"></script>
+    </body>
+</html>
