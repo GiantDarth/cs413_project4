@@ -406,7 +406,7 @@
                 this.moving = true;
                 this.container.rotation = 0;
 
-                if(this.y >= (LEVEL_HEIGHT + SAFE_ZONE_HEIGHT - 1) * TILE_SIZE) {
+                if(this.y >= (LEVEL_HEIGHT + SAFE_ZONE_HEIGHT - 1) * TILE_SIZE || (this.y < 0 && this.progression % 2 === 1)) {
                     this.progression++;
                 }
                 let step = TILE_SIZE * (this.progression % 2 === 0 ? 1 : -1);
