@@ -110,7 +110,7 @@
             }
 
             let centipede = new Centipede(10);
-            this.enemies.push(centipede);
+            this.enemies.push(...centipede.segments);
 
             for(let m = 0; m < 20; m++) {
                 let x = getRandomInt(1, LEVEL_WIDTH - 1) * TILE_SIZE;
@@ -148,9 +148,11 @@
                 });
 
                 this.player.sprite.on('mousedown', (e) => {
-                    let bullet = new Bullet(this.player.x, this.player.y + LEVEL_HEIGHT * TILE_SIZE);
-                    this.bullets.push(bullet);
-                    this.bulletLayer.addChild(bullet.container);
+                    if(this.player.isAlive) {
+                        let bullet = new Bullet(this.player.x, this.player.y + LEVEL_HEIGHT * TILE_SIZE);
+                        this.bullets.push(bullet);
+                        this.bulletLayer.addChild(bullet.container);
+                    }
                 });
             }
         }
@@ -166,6 +168,8 @@
         }
 
         update() {
+            let ORIGIN = new PIXI.Point(0, 0);
+            let playerRef = new PIXI.Point(this.saveLayer.position.x / TILE_SIZE, this.saveLayer.position.y / TILE_SIZE);
             if(this.demo) {
                 for(let enemy of this.enemies) {
                     enemy.update();
@@ -173,12 +177,43 @@
             }
             else if(!this.paused) {
                 for(let enemy of this.enemies) {
-                    enemy.update(this.player);
+                    enemy.update();
+                    if(this.player.isAlive && enemy.collide(this.player, ORIGIN, playerRef)) {
+
+                        this.player.die();
+                    }
+                    for(let mushroom of this.mushrooms) {
+                        if(mushroom.isAlive && !enemy.moving && enemy.collide(mushroom, ORIGIN, ORIGIN)) {
+                            enemy.states.dir.collide();
+                        }
+                    }
                 }
 
                 for(let bullet of this.bullets) {
                     bullet.update();
+                    for(let enemy of this.enemies) {
+                        if(bullet.isAlive && bullet.collide(enemy, ORIGIN, ORIGIN)) {
+                            enemy.die();
+                            bullet.die();
+                        }
+                    }
+                    for(let mushroom of this.mushrooms) {
+                        if(bullet.isAlive && bullet.collide(mushroom, ORIGIN, ORIGIN)) {
+                            mushroom.die();
+                            bullet.die();
+                        }
+                    }
                 }
+
+                if(!this.player.isAlive) {
+                    this.saveLayer.removeChild(this.player.container);
+                }
+
+                let oldEnemies = this.enemies.filter(enemy => !enemy.isAlive);
+                for(let enemy of oldEnemies) {
+                    this.enemyContainer.removeChild(enemy.container);
+                }
+                this.enemies = this.enemies.filter(enemy => enemy.isAlive);
 
                 let oldBullets = this.bullets.filter(bullet => !bullet.isAlive);
                 for(let bullet of oldBullets) {
@@ -186,9 +221,11 @@
                 }
                 this.bullets = this.bullets.filter(bullet => bullet.isAlive);
 
-                for(let mushroom of this.mushrooms) {
-                    mushroom.update();
+                let oldMushrooms = this.mushrooms.filter(mushroom => !mushroom.isAlive);
+                for(let mushroom of oldMushrooms) {
+                    this.mushroomLayer.removeChild(mushroom.container);
                 }
+                this.mushroom = this.mushrooms.filter(mushroom => mushroom.isAlive);
             }
 
             // Final step
@@ -246,7 +283,8 @@
                 death: StateMachine.create({
                     initial: 'false',
                     events: [
-                        { name: 'die', from: 'false', to: 'true' }
+                        { name: 'die', from: 'false', to: 'true' },
+                        { name: 'die', from: 'true', to: 'true' }
                     ]
                 })
             }
@@ -254,6 +292,20 @@
 
         update() {
             super.update();
+        }
+
+        collide(other, firstRef, secondRef) {
+            let first = {
+                bounds: this.container.getBounds(),
+                pos: this.container.toGlobal(firstRef)
+            }
+            let second = {
+                bounds: other.container.getBounds(),
+                pos: other.container.toGlobal(secondRef)
+            }
+
+            return Math.abs(first.pos.x - second.pos.x) < (first.bounds.width + second.bounds.width) / 2 &&
+                Math.abs(first.pos.y - second.pos.y) < (first.bounds.height + second.bounds.height) / 2;
         }
 
         get isAlive() {
