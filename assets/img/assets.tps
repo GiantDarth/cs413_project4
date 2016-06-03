@@ -208,6 +208,7 @@
             <key type="filename">base7.png</key>
             <key type="filename">base8.png</key>
             <key type="filename">base9.png</key>
+            <key type="filename">bullet1.png</key>
             <key type="filename">head1.png</key>
             <key type="filename">head10.png</key>
             <key type="filename">head11.png</key>
@@ -228,6 +229,8 @@
             <key type="filename">head7.png</key>
             <key type="filename">head8.png</key>
             <key type="filename">head9.png</key>
+            <key type="filename">mushroom1.png</key>
+            <key type="filename">player1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -275,6 +278,9 @@
             <filename>head18.png</filename>
             <filename>head19.png</filename>
             <filename>head20.png</filename>
+            <filename>player1.png</filename>
+            <filename>bullet1.png</filename>
+            <filename>mushroom1.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
